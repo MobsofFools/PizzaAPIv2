@@ -29,27 +29,6 @@ namespace PizzaAPIv2.Controllers
             Response.Headers.Add("Access-Control-Allow-Methods", "GET");
             return await _context.Recipes.ToListAsync();
         }
-        [Route("GetCustomers")]
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
-        {
-            Response.Headers.Add("Access-Control-Allow-Origin", "*");
-            Response.Headers.Add("Access-Control-Allow-Credentials", "true");
-            Response.Headers.Add("Access-Control-Allow-Headers", "*");
-            Response.Headers.Add("Access-Control-Allow-Methods", "GET");
-            return await _context.Customers.ToListAsync();
-        }
-
-        [Route("GetOrders")]
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
-        {
-            Response.Headers.Add("Access-Control-Allow-Origin", "*");
-            Response.Headers.Add("Access-Control-Allow-Credentials", "true");
-            Response.Headers.Add("Access-Control-Allow-Headers", "*");
-            Response.Headers.Add("Access-Control-Allow-Methods", "GET");
-            return await _context.Orders.ToListAsync();
-        }
 
         [Route("Check")]
         [HttpPost]
@@ -160,6 +139,91 @@ namespace PizzaAPIv2.Controllers
                 return order;
             }
         }
-        
+
+        [Route("GetInProgress")]
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<OrderDetails>>> GetInProgress()
+        {
+            await using (_context)
+            {
+                Response.Headers.Add("Access-Control-Allow-Origin", "*");
+                Response.Headers.Add("Access-Control-Allow-Credentials", "true");
+                Response.Headers.Add("Access-Control-Allow-Headers", "*");
+                Response.Headers.Add("Access-Control-Allow-Methods", "GET");
+
+                var orders = (from o in _context.Orders
+                              join c in _context.Customers
+                              on o.CustomerId equals c.CustomerId
+                              where o.OrderStatus == "In Progress"
+                              select new OrderDetails
+                              {
+                                  OrderId = o.OrderId,
+                                  OrderDate = o.OrderDate,
+                                  CustomerFname = c.CustomerFname,
+                                  CustomerLname = c.CustomerLname,
+                                  CustomerEmail = c.CustomerEmail,
+                                  Total = o.Total,
+                                  OrderStatus = o.OrderStatus
+                              }).ToListAsync();
+                return await orders;
+            }
+        }
+
+        [Route("GetCompleted")]
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<OrderDetails>>> GetCompleted()
+        {
+            await using (_context)
+            {
+                Response.Headers.Add("Access-Control-Allow-Origin", "*");
+                Response.Headers.Add("Access-Control-Allow-Credentials", "true");
+                Response.Headers.Add("Access-Control-Allow-Headers", "*");
+                Response.Headers.Add("Access-Control-Allow-Methods", "GET");
+
+                var orders = (from o in _context.Orders
+                              join c in _context.Customers
+                              on o.CustomerId equals c.CustomerId
+                              where o.OrderStatus == "Completed"
+                              select new OrderDetails
+                              {
+                                  OrderId = o.OrderId,
+                                  OrderDate = o.OrderDate,
+                                  CustomerFname = c.CustomerFname,
+                                  CustomerLname = c.CustomerLname,
+                                  CustomerEmail = c.CustomerEmail,
+                                  Total = o.Total,
+                                  OrderStatus = o.OrderStatus
+                              }).ToListAsync();
+                return await orders;
+            }
+        }
+        [Route("GetPending")]
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<OrderDetails>>> GetPending()
+        {
+            await using (_context)
+            {
+                Response.Headers.Add("Access-Control-Allow-Origin", "*");
+                Response.Headers.Add("Access-Control-Allow-Credentials", "true");
+                Response.Headers.Add("Access-Control-Allow-Headers", "*");
+                Response.Headers.Add("Access-Control-Allow-Methods", "GET");
+
+                var orders = (from o in _context.Orders
+                              join c in _context.Customers
+                              on o.CustomerId equals c.CustomerId
+                              where o.OrderStatus == "Pending"
+                              select new OrderDetails
+                              {
+                                  OrderId = o.OrderId,
+                                  OrderDate = o.OrderDate,
+                                  CustomerFname = c.CustomerFname,
+                                  CustomerLname = c.CustomerLname,
+                                  CustomerEmail = c.CustomerEmail,
+                                  Total = o.Total,
+                                  OrderStatus = o.OrderStatus
+                              }).ToListAsync();
+                return await orders;
+            }
+        }
     }
 }

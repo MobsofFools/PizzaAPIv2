@@ -134,6 +134,7 @@ namespace PizzaAPIv2.Controllers
                 return NotFound();
             }
         }
+
         [Route("SetCompleted/{id}")]
         [HttpPatch]
         public async Task<ActionResult<OrderDetails>> SetCompleted(int id)

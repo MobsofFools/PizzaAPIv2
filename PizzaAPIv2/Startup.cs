@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using PizzaAPIv2.Hubs;
 using PizzaAPIv2.Models;
 using System;
 using System.Collections.Generic;
@@ -31,7 +30,6 @@ namespace PizzaAPIv2
         {
             services.AddCors();
             services.AddDbContext<PizzaContext>();
-            services.AddSignalR();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -60,17 +58,9 @@ namespace PizzaAPIv2
 
             app.UseAuthorization();
 
-            var webSocketOptions = new WebSocketOptions()
-            {
-                KeepAliveInterval = TimeSpan.FromSeconds(120),
-            };
-
-            app.UseWebSockets(webSocketOptions);
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<StatusHub>("status");
             });
         }
     }
